@@ -1,5 +1,6 @@
-# Ignore the Log directory
+# Ignore the Log and Simulation directories
 Logs/
+Simulations/
 
 
 # Windows default autosave extension
