@@ -2,7 +2,7 @@ function nFigures = saveFigures(savePath,doSaveFigures,nFigures)
     figsavePath = fullfile(savePath, 'Figures');
     figHandles = findobj('Type', 'figure');
     
-    if saveFigures
+    if doSaveFigures
         % Iterate over each figure
         for j = 1:length(figHandles)
             % Get the current figure handle
@@ -22,9 +22,10 @@ function nFigures = saveFigures(savePath,doSaveFigures,nFigures)
         end
     else
         for j = 1:length(figHandles)
+            figHandle = figHandles(j);
             close(figHandle);
         end
     end
-end
 
-nFigures = length(figHandles);
+    nFigures = length(figHandles);
+end
