@@ -1,6 +1,11 @@
 function nFigures = saveFigures(savePath,doSaveFigures,nFigures)
     figsavePath = fullfile(savePath, 'Figures');
     figHandles = findobj('Type', 'figure');
+
+    if ~isfolder(figsavePath)
+        mkdir(figsavePath);
+    end
+
     
     if doSaveFigures
         % Iterate over each figure
