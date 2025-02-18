@@ -1,10 +1,10 @@
 cd('C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks');
 checkSubfolders = true;
 
-saveFolder = 'C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks\Logs';
+saveFolder = 'C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks\LogsActual';
 masterFile = fullfile(saveFolder, 'master.csv');
 
-logsDir = 'C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks\Logs';
+logsDir = 'C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks\LogsActual';
     
 % Ensure the Logs directory exists
 if ~isfolder(logsDir)
@@ -25,38 +25,40 @@ end
 [~, sortIdx] = sort([subfolders.datenum]); % Sort by creation time
 subfolders = subfolders(sortIdx);
 
-% if checkSubfolders
-%     for i = 1:length(subfolders)
-%         recentSubfolder = subfolders(i).name;
-%         recentSubfolderPath = fullfile(logsDir, recentSubfolder);
-% 
-%         % Locate the .blg file in the most recent subfolder
-%         blgFiles = dir(fullfile(recentSubfolderPath, '*.blg'));
-% 
-%         % Check if a .blg file exists
-%         if isempty(blgFiles)
-%             error('No .blg file found in the most recent subfolder, check folder permissions. (Admin only by default)');
-%         end
-% 
-%         % Assume there's only one .blg file; if multiple, process the first one
-%         blgFile = fullfile(recentSubfolderPath, blgFiles(1).name);
-% 
-%         % Define the output .csv file path
-%         csvName = sprintf('%.0f', posixtime(datetime('now', 'TimeZone', 'UTC')));
-%         csvFile = fullfile(logsDir, [csvName, '.csv']);
-% 
-%         % Convert .blg to .csv using the relog command
-%         relogCmd = sprintf('relog "%s" -f csv -o "%s"', blgFile, csvFile);
-%         system(relogCmd);
-% 
-%         % Delete the processed subfolder
-%         try
-%             % rmdir(recentSubfolderPath, 's');
-%         catch
-%             warning('Failed to delete the folder: %s\nError: %s', recentSubfolderPath, ME.message);
-%         end
-%     end
-% end
+if checkSubfolders
+    for i = 1:length(subfolders)
+        recentSubfolder = subfolders(i).name;
+        recentSubfolderPath = fullfile(logsDir, recentSubfolder);
+
+        % Locate the .blg file in the most recent subfolder
+        blgFiles = dir(fullfile(recentSubfolderPath, '*.blg'));
+
+        % Check if a .blg file exists
+        if isempty(blgFiles)
+            error('No .blg file found in the most recent subfolder, check folder permissions. (Admin only by default)');
+        end
+
+        % Assume there's only one .blg file; if multiple, process the first one
+        blgFile = fullfile(recentSubfolderPath, blgFiles(1).name);
+
+        % Define the output .csv file path
+        csvName = sprintf('%.0f', posixtime(datetime('now', 'TimeZone', 'UTC')));
+        csvFile = fullfile(logsDir, [csvName, '.csv']);
+
+        % Convert .blg to .csv using the relog command
+        relogCmd = sprintf('relog "%s" -f csv -o "%s"', blgFile, csvFile);
+        system(relogCmd);
+
+        pause(1);
+
+        % Delete the processed subfolder
+        try
+            rmdir(recentSubfolderPath, 's');
+        catch
+            warning('Failed to delete the folder: %s\nError: %s', recentSubfolderPath, ME.message);
+        end
+    end
+end
 
 % Get list of CSV files sorted by creation date
 fileList = dir(fullfile(saveFolder, '*.csv'));
@@ -93,7 +95,7 @@ for i = 1:length(fileList)
     end
     
     % Delete the processed file
-    % delete(filePath);
+    delete(filePath);
 end
 
 disp('Processing complete. All files merged and deleted.');
