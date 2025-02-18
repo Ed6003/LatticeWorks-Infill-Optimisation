@@ -25,7 +25,7 @@ end
 [~, sortIdx] = sort([subfolders.datenum]); % Sort by creation time
 subfolders = subfolders(sortIdx);
 
-if checkSubfolders
+if checkSubfolders % Creating the csv files from the blg files
     for i = 1:length(subfolders)
         recentSubfolder = subfolders(i).name;
         recentSubfolderPath = fullfile(logsDir, recentSubfolder);
@@ -66,7 +66,7 @@ fileList = fileList(~strcmp({fileList.name}, 'master.csv'));
 [~, sortIdx] = sort([fileList.datenum]); % Sort by creation time
 fileList = fileList(sortIdx);
 
-% Loop through each file in order of creation
+% Loop through each file in order of creation and append to master.csv
 for i = 1:length(fileList)
     filePath = fullfile(saveFolder, fileList(i).name);
     
