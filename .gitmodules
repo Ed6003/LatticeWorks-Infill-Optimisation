@@ -1,0 +1,3 @@
+[submodule "GGP-Matlab"]
+	path = GGP-Matlab
+	url = https://github.com/topggp/GGP-Matlab.git
