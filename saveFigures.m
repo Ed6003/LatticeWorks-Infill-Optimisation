@@ -1,3 +1,4 @@
+%(*@\draftcomment{the prefix for every sub-heading in this script is "savefigures"}@*)
 function nFigures = saveFigures(savePath,doSaveFigures,nFigures)
     figsavePath = fullfile(savePath, 'Figures');
     figHandles = findobj('Type', 'figure');
@@ -6,23 +7,17 @@ function nFigures = saveFigures(savePath,doSaveFigures,nFigures)
         mkdir(figsavePath);
     end
 
-    
+    %(*@\codesubsection{Iteratively Save Figures}{savefigures-iteratively-save-figures}@*)
     if doSaveFigures
-        % Iterate over each figure
         for j = 1:length(figHandles)
-            % Get the current figure handle
+
             figHandle = figHandles(j);
             
-            % Generate a unique filename based on the figure number
+            % generate unique filename
             figName = sprintf('Figure_%d', figHandle.Number + nFigures);
             
-            % Save the figure as a .fig file
-            savefig(figHandle, fullfile(figsavePath, [figName, '.fig']));
-            
-            % Save the figure as a .png file
-            saveas(figHandle, fullfile(figsavePath, [figName, '.png']));
-            
-            % Close the figure
+            savefig(figHandle, fullfile(figsavePath, [figName, '.fig'])); % save as .fig  
+            saveas(figHandle, fullfile(figsavePath, [figName, '.png'])); % save as .png
             close(figHandle);
         end
     else

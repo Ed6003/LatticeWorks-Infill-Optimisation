@@ -4,13 +4,13 @@ function isCompleted = simulationCompleted(parentDir)
 %   directory (parentDir) contains all the required simulation files and
 %   if the Figures subfolder contains all the required figure files.
 
-    % Define the required simulation files (expected to be in parentDir)
+    % required files in main folder
     requiredSimulationFiles = {
         'Lattice_FEA.com', 'Lattice_FEA.dat', 'Lattice_FEA.inp', 'Lattice_FEA.msg', ...
         'Lattice_FEA.odb', 'Lattice_FEA.prt', 'Lattice_FEA.sta', 'simulation_results.mat'
     };
 
-    % Define the required figure files (expected to be in parentDir\Figures)
+    % required files in Figures subfolder
     requiredFigureFiles = {
         'Figure_1.fig', 'Figure_1.png', 'Figure_2.fig', 'Figure_2.png', ...
         'Figure_3.fig', 'Figure_3.png', 'Figure_4.fig', 'Figure_4.png', ...
@@ -22,21 +22,20 @@ function isCompleted = simulationCompleted(parentDir)
         'Figure_15.fig', 'Figure_15.png', ...
     };
 
-    % Check if the base directory exists
+    % check if the base directory exists
     if ~isfolder(parentDir)
         isCompleted = 0;
         return;
     end
 
-    % Check if all required simulation files exist in the base directory.
+    % check if all required simulation files exist in the base directory.
     simulationFilesExist = all(cellfun(@(f) exist(fullfile(parentDir, f), 'file') == 2, requiredSimulationFiles));
 
-    % Define the Figures subfolder path and check if it exists.
+    % check if folder exists
     figuresDir = fullfile(parentDir, 'Figures');
     if ~isfolder(figuresDir)
         figureFilesExist = false;
     else
-        % Check if all required figure files exist in the Figures subfolder.
         figureFilesExist = all(cellfun(@(f) exist(fullfile(figuresDir, f), 'file') == 2, requiredFigureFiles));
     end
 
