@@ -1,6 +1,4 @@
-%(*@\draftcomment{the prefix for every sub-heading in this script is "summarystruct"}@*)
-%(*@\codesubsection{Merge Results}{summarystruct-merge-structs}@*)
-clear; close all; clc;
+clear; close all; clc; %(*@\draftcomment{the prefix for every sub-heading in this script is "summarystruct"}@*) %(*@\codesubsection{Merge Results}{summarystruct-merge-structs}@*)
 defaultFolder = fullfile('D:','TechnicalReport','LatticeProperties_LinearFinal');
 matPath = fullfile(defaultFolder,'!Summary','simulation_results_summary.mat');
 

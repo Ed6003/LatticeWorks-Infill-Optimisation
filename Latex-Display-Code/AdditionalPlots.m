@@ -1,6 +1,4 @@
-%(*@\draftcomment{the prefix for every sub-heading in this script is "adplots"}@*)
-clear; close all; clc;
-%(*@\codesubsection{Plot Settings}{adplots-plot-settings}@*)
+clear; close all; clc; %(*@\draftcomment{the prefix for every sub-heading in this script is "adplots"}@*) %(*@\codesubsection{Plot Settings}{adplots-plot-settings}@*)
 figureTitles = true;
 
 cMap=[0.6*ones(256,2), linspace(1, 0, 256)'];

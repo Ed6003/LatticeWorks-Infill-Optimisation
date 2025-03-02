@@ -1,5 +1,4 @@
-%(*@\draftcomment{the prefix for every sub-heading in this script is "topopt"}@*)
-savePath = 'D:\TechnicalReport\Variable-TPMS-Figures\TopOpt-From_nTop';
+savePath = 'D:\TechnicalReport\Variable-TPMS-Figures\TopOpt-From_nTop'; %(*@\draftcomment{the prefix for every sub-heading in this script is "topopt"}@*)
 
 pointCloud = readtable('D:\TechnicalReport\DensityField-0.75.csv');
 pointCloud.Properties.VariableNames = {'X_mm', 'Y_mm', 'Z_mm', 'Density'};

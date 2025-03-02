@@ -1,61 +1,59 @@
-%(*@\draftcomment{the prefix for every sub-heading in this script is "opt"}@*)
-cd("C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks\TopOpt")
+cd("C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks\TopOpt") %(*@\draftcomment{the prefix for every sub-heading in this script is "opt"}@*)
 savePath = 'D:\TechnicalReport\Variable-TPMS-Figures\TopOpt';
 % This work is based on DEMO 13/14
 
 load('sample.mat');
 
-% % Create a PDE model
-% model = createpde("structural","static-solid");
-%
-% % Import geometry from a STEP file
-% importGeometry(model, 'Planet-18-Teeth-1.8mm-Mod.step');
-% scale(model.Geometry,1e3); % to mm
-% material_yield_strength = 50e6; % MPa
-% material_E = 1666e6; % Pa
-% material_v = 0.38;
-%
-% % Visualize the imported geometry
-% cFigure;
-% pdegplot(model, 'FaceLabels', 'on', 'FaceAlpha', 0.5);
-% title('Imported Gear Geometry');
-% xlim([-20 20])
-% ylim([-20 20])
-% zlim([0 20])
-%
-% teeth_faces = [14,24,31,38,48,55,62,72,79,86,96,103,110,120,127,134,144,151];
-%
-% teeth_distance = 15e-3; % mm
-% torque = 10; % J (Nm)
-% teeth_force = (torque / teeth_distance) / numel(teeth_faces); % N
-%
-% area_mm2 = 66.441 * 1e-6;
-% pressure = teeth_force / area_mm2;
-%
-% Apply pressure load to each gear tooth face
-% structuralBoundaryLoad(model,"Face",teeth_faces,"Pressure",pressure);
-%
-% structuralProperties(model,"YoungsModulus",material_E,"PoissonsRatio",material_v);
-% structuralBC(model,"Face",8,"Constraint","fixed");
-% % generateMesh(model, 'GeometricOrder', 'quadratic','Hmax',0.0005);
-% % fprintf('%g k Elements created',size(model.Mesh.Elements,2)./1000);
-%
-% figure
-% pdeplot3D(model)
-% title("Mesh with Quadratic Tetrahedral Elements");
-%
-% % result = solve(model);
-%
-% maxVonMises = max(result.VonMisesStress); % As the load is distributed using surface traction and surface traction = F / A
-% fprintf("Max Von Mises is %g MPa.", (maxVonMises / 1e6) );
-% fprintf("Safety Factor is %.2f.", (material_yield_strength / (maxVonMises)));
+model = createpde("structural","static-solid");
 
-% Data to visualize
+% Import geometry from a STEP file
+importGeometry(model, 'Planet-18-Teeth-1.8mm-Mod.step');
+scale(model.Geometry,1e3); % to mm
+material_yield_strength = 50e6; % MPa
+material_E = 1666e6; % Pa
+material_v = 0.38;
+
+% Visualise the imported geometry
+cFigure;
+pdegplot(model, 'FaceLabels', 'on', 'FaceAlpha', 0.5);
+title('Imported Gear Geometry');
+xlim([-20 20])
+ylim([-20 20])
+zlim([0 20])
+
+teeth_faces = [14,24,31,38,48,55,62,72,79,86,96,103,110,120,127,134,144,151];
+
+teeth_distance = 15e-3; % mm
+torque = 10; % J (Nm)
+teeth_force = (torque / teeth_distance) / numel(teeth_faces); % N
+
+area_mm2 = 66.441 * 1e-6;
+pressure = teeth_force / area_mm2;
+
+Apply pressure load to each gear tooth face
+structuralBoundaryLoad(model,"Face",teeth_faces,"Pressure",pressure);
+
+structuralProperties(model,"YoungsModulus",material_E,"PoissonsRatio",material_v);
+structuralBC(model,"Face",8,"Constraint","fixed");
+generateMesh(model, 'GeometricOrder', 'quadratic','Hmax',0.0005);
+fprintf('%g k Elements created',size(model.Mesh.Elements,2)./1000);
+
+figure
+pdeplot3D(model)
+title("Mesh with Quadratic Tetrahedral Elements");
+
+result = solve(model);
+
+maxVonMises = max(result.VonMisesStress); % As the load is distributed using surface traction and surface traction = F / A
+fprintf("Max Von Mises is %g MPa.", (maxVonMises / 1e6) );
+fprintf("Safety Factor is %.2f.", (material_yield_strength / (maxVonMises)));
+
+% Data to visualise
 meshData = result.Mesh;
 nodalData = result.VonMisesStress;
 deformationData = result.Displacement;
 
-% Create PDE result visualization
+% Create PDE result visualisation
 resultViz3 = pdeviz(meshData,nodalData, ...
     "DeformationData",deformationData, ...
     "DeformationScaleFactor",0, ...
@@ -280,12 +278,12 @@ gpatch(Fsn, Vsn, 'kw', 'none', 0.01); % transparent original
 gpatch(Fc(logicSide,:), Vc, 'rw', 'k', 1); % sliced mesh
 gpatch(Eb, Vc, 'none', 'b', 1); % intersections
 
-% Enhance visualization
+% Enhance visualisation
 axisGeom;
 camlight headlight;
 colormap gjet;
 icolorbar;
-% title('Sliced Mesh Visualization');
+% title('Sliced Mesh Visualisation');
 drawnow;
 
 %(*@\codesubsection{Re-Save New Figures}{opt-resave-new-figures}@*)

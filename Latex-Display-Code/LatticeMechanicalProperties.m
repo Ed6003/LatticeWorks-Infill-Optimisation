@@ -1,5 +1,4 @@
-%(*@\draftcomment{the prefix for every sub-heading in this script is "lattice"}@*)
-clear; close all; clc;
+clear; close all; clc; %(*@\draftcomment{the prefix for every sub-heading in this script is "lattice"}@*)
 
 updateSim = true; % will not recompute abaqus simulation, useful for testing fig generation
 overwrite = false; % overwrite already simulated files (forces script completion)

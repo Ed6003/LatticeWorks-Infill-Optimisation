@@ -1,5 +1,4 @@
-%(*@\draftcomment{the prefix for every sub-heading in this script is "homogenisation"}@*)
-folderPath = 'D:\TechnicalReport\nTop Homogenisation';
+folderPath = 'D:\TechnicalReport\nTop Homogenisation'; %(*@\draftcomment{the prefix for every sub-heading in this script is "homogenisation"}@*)
 files = dir(fullfile(folderPath, '*.csv'));
 fileNames = {files.name};
 
