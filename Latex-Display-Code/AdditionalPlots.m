@@ -26,245 +26,245 @@ selected_idx = round(linspace(1, linspace_steps, nCols * nRows)); % Select 6 eve
 
 for i = original_points(selected_idx)
 
-defaultFolder = fullfile('D:','TechnicalReport','LatticeProperties_LinearFinal'); % Changed to external hard drive
-savePath = fullfile(defaultFolder,sprintf('%.5g_Lattice_Density',i));
-matlabPath = fullfile(savePath,'simulation_results.mat');
+    defaultFolder = fullfile('D:','TechnicalReport','LatticeProperties_LinearFinal'); % Changed to external hard drive
+    savePath = fullfile(defaultFolder,sprintf('%.5g_Lattice_Density',i));
+    matlabPath = fullfile(savePath,'simulation_results.mat');
 
-load(matlabPath);
+    load(matlabPath);
 
-f = resultStruct.f; v = resultStruct.v; c = resultStruct.c;
+    f = resultStruct.f; v = resultStruct.v; c = resultStruct.c;
 
-%(*@\codesubsection{Figure 1}{adplots-figure-1}@*)
-figure(fig1);
-subplot(nRows, nCols, count);
-title(sprintf('Isovalue: %.3g',resultStruct.level_set));
+    %(*@\codesubsection{Figure 1}{adplots-figure-1}@*)
+    figure(fig1);
+    subplot(nRows, nCols, count);
+    title(sprintf('Isovalue: %.3g',resultStruct.level_set));
 
-if figureTitles
-    gtitle('Iso-surface with patched sides');
-end
+    if figureTitles
+        gtitle('Iso-surface with patched sides');
+    end
 
-% title('Face labelling');
-hp1 = gpatch(f,v,c,'none', 1); 
-hp1.FaceColor = 'flat';
-colormap(gca,gjet(6)); 
-axisGeom(gca,fontSize); camlight headlight;
+    % title('Face labelling');
+    hp1 = gpatch(f,v,c,'none', 1);
+    hp1.FaceColor = 'flat';
+    colormap(gca,gjet(6));
+    axisGeom(gca,fontSize); camlight headlight;
 
-%(*@\codesubsection{Figure 2}{adplots-figure-2}@*)
-figure(fig2);
-subplot(nRows, nCols, count);
-title(sprintf('Isovalue: %.3g',resultStruct.level_set));
+    %(*@\codesubsection{Figure 2}{adplots-figure-2}@*)
+    figure(fig2);
+    subplot(nRows, nCols, count);
+    title(sprintf('Isovalue: %.3g',resultStruct.level_set));
 
-if figureTitles
-    gtitle('Iso-surface Orthographic Projection');
-end
+    if figureTitles
+        gtitle('Iso-surface Orthographic Projection');
+    end
 
-% title('Orthographic Projection');
-% Create the patch with uniform color
-hp2 = gpatch(f, v, 'none', 1);
-hp2.FaceColor = [0 0.4470 0.7410];
-hp2.EdgeColor = [0 0.4470 0.7410];
-axis equal;
-xlim([min(v(:,1)), max(v(:,1))]) % Adjust x-axis limits to your data range
-ylim([min(v(:,2)), max(v(:,2))]) % Adjust y-axis limits to your data range
+    % title('Orthographic Projection');
+    % Create the patch with uniform color
+    hp2 = gpatch(f, v, 'none', 1);
+    hp2.FaceColor = [0 0.4470 0.7410];
+    hp2.EdgeColor = [0 0.4470 0.7410];
+    axis equal;
+    xlim([min(v(:,1)), max(v(:,1))]) % Adjust x-axis limits to your data range
+    ylim([min(v(:,2)), max(v(:,2))]) % Adjust y-axis limits to your data range
 
-%(*@\codesubsection{Figure 3}{adplots-figure-3}@*)
-figure(fig3);
-subplot(nRows, nCols, count);
-title(sprintf('Isovalue: %.3g',resultStruct.level_set));
+    %(*@\codesubsection{Figure 3}{adplots-figure-3}@*)
+    figure(fig3);
+    subplot(nRows, nCols, count);
+    title(sprintf('Isovalue: %.3g',resultStruct.level_set));
 
-if figureTitles
-    gtitle('Iso-surface generation');
-end
+    if figureTitles
+        gtitle('Iso-surface generation');
+    end
 
-hp3 = gpatch(f,v,c,'none', 1); 
-hp3.FaceColor = [0 0.4470 0.7410];
-% hp3.EdgeColor = 'k';
-colormap(gca,gjet(6)); 
-axisGeom(gca,fontSize); camlight headlight;
+    hp3 = gpatch(f,v,c,'none', 1);
+    hp3.FaceColor = [0 0.4470 0.7410];
+    % hp3.EdgeColor = 'k';
+    colormap(gca,gjet(6));
+    axisGeom(gca,fontSize); camlight headlight;
 
-%(*@\codesubsection{Figure 4}{adplots-figure-4}@*)
-F = resultStruct.F; V = resultStruct.V;
-figure(fig4);
-subplot(nRows, nCols, count); hold on;
+    %(*@\codesubsection{Figure 4}{adplots-figure-4}@*)
+    F = resultStruct.F; V = resultStruct.V;
+    figure(fig4);
+    subplot(nRows, nCols, count); hold on;
 
-if figureTitles
-    gtitle('Geogram remeshed');
-end
+    if figureTitles
+        gtitle('Geogram remeshed');
+    end
 
-gpatch(F,V,'w','k',1);
-axisGeom(gca,fontSize);
-camlight headlight;
+    gpatch(F,V,'w','k',1);
+    axisGeom(gca,fontSize);
+    camlight headlight;
 
-x_length = resultStruct.lattice.x_length;
+    x_length = resultStruct.lattice.x_length;
 
-%(*@\codesubsection{Import Mesh Data}{adplots-import-mesh-data}@*)
-meshOutput = resultStruct.meshOutput;
-Fb=meshOutput.facesBoundary;
-V=meshOutput.nodes;
+    %(*@\codesubsection{Import Mesh Data}{adplots-import-mesh-data}@*)
+    meshOutput = resultStruct.meshOutput;
+    Fb=meshOutput.facesBoundary;
+    V=meshOutput.nodes;
 
-%(*@\codesubsection{Figure 5}{adplots-figure-5}@*)
-C_vertex = resultStruct.C_vertex;
+    %(*@\codesubsection{Figure 5}{adplots-figure-5}@*)
+    C_vertex = resultStruct.C_vertex;
 
-figure(fig5);
-subplot(nRows, nCols, count);
+    figure(fig5);
+    subplot(nRows, nCols, count);
 
-title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
+    title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
-if figureTitles
-    gtitle('Logic Defined Node Sets');
-end
+    if figureTitles
+        gtitle('Logic Defined Node Sets');
+    end
 
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    hold on;
 
-gpatch(Fb,V,'w','none',1);
-scatterV(V,10,C_vertex,'filled');
+    gpatch(Fb,V,'w','none',1);
+    scatterV(V,10,C_vertex,'filled');
 
-axisGeom(gca,fontSize);
-colormap gjet; % icolorbar;
-camlight headlight;
+    axisGeom(gca,fontSize);
+    colormap gjet; % icolorbar;
+    camlight headlight;
 
-bcEncastreList = resultStruct.bcSets.bcEncastreList;
-bcLoadList = resultStruct.bcSets.bcLoadList;
-bcTrackY = resultStruct.bcSets.bcTrackY;
-bcTrackZ = resultStruct.bcSets.bcTrackZ;
+    bcEncastreList = resultStruct.bcSets.bcEncastreList;
+    bcLoadList = resultStruct.bcSets.bcLoadList;
+    bcTrackY = resultStruct.bcSets.bcTrackY;
+    bcTrackZ = resultStruct.bcSets.bcTrackZ;
 
-%(*@\codesubsection{Figure 6}{adplots-figure-6}@*)
-figure(fig6);
-test = subplot(nRows, nCols, count);
-title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
+    %(*@\codesubsection{Figure 6}{adplots-figure-6}@*)
+    figure(fig6);
+    test = subplot(nRows, nCols, count);
+    title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
-if figureTitles
-    gtitle('Boundary Conditions');
-end
+    if figureTitles
+        gtitle('Boundary Conditions');
+    end
 
-xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
-hold on;
-gpatch(Fb,V,'kw','none',0.5);
+    xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
+    hold on;
+    gpatch(Fb,V,'kw','none',0.5);
 
-test(1)=plotV(V(bcEncastreList,:),'r*','MarkerSize',markerSize);
-test(2)=plotV(V(bcLoadList,:),'k.','MarkerSize',markerSize);
-test(3)=plotV(V(bcTrackZ,:),'.','MarkerSize',markerSize/2, 'MarkerEdgeColor', blue);
-test(4)=plotV(V(bcTrackY,:),'c.','MarkerSize',markerSize/2, 'MarkerEdgeColor', cyan);
-% legend(test,{'BC Load','BC Encastre','BC Track Z','BC Track Y'});
+    test(1)=plotV(V(bcEncastreList,:),'r*','MarkerSize',markerSize);
+    test(2)=plotV(V(bcLoadList,:),'k.','MarkerSize',markerSize);
+    test(3)=plotV(V(bcTrackZ,:),'.','MarkerSize',markerSize/2, 'MarkerEdgeColor', blue);
+    test(4)=plotV(V(bcTrackY,:),'c.','MarkerSize',markerSize/2, 'MarkerEdgeColor', cyan);
+    % legend(test,{'BC Load','BC Encastre','BC Track Z','BC Track Y'});
 
-axisGeom(gca,fontSize);
-camlight headlight;
+    axisGeom(gca,fontSize);
+    camlight headlight;
 
-%(*@\codesubsection{Figure 7}{adplots-figure-7}@*)
-figure(fig7);
-subplot(nRows, nCols, count);
+    %(*@\codesubsection{Figure 7}{adplots-figure-7}@*)
+    figure(fig7);
+    subplot(nRows, nCols, count);
 
-if figureTitles
-    gtitle('Tracked Z Displacement (mm)')
-end
+    if figureTitles
+        gtitle('Tracked Z Displacement (mm)')
+    end
 
-title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
+    title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
-xz = resultStruct.xz; Uz = resultStruct.Uz;
-scatter(xz, Uz, 'x', 'MarkerEdgeColor', blue);
+    xz = resultStruct.xz; Uz = resultStruct.Uz;
+    scatter(xz, Uz, 'x', 'MarkerEdgeColor', blue);
 
-xlabel('Global X Coordinate (mm)');
-ylabel('Z Displacement (mm)');
-grid on;
+    xlabel('Global X Coordinate (mm)');
+    ylabel('Z Displacement (mm)');
+    grid on;
 
-if count == 1
-    maxY = max(Uz);
-    minY = min(Uz);
-    
-    ceilFactor = 1e-3;
-    maxY = ceil(maxY / ceilFactor) * ceilFactor;
-    minY = floor(minY / ceilFactor) * ceilFactor;
-end
+    if count == 1
+        maxY = max(Uz);
+        minY = min(Uz);
 
-ylim([minY maxY]);
+        ceilFactor = 1e-3;
+        maxY = ceil(maxY / ceilFactor) * ceilFactor;
+        minY = floor(minY / ceilFactor) * ceilFactor;
+    end
 
-%(*@\codesubsection{Figure 8}{adplots-figure-8}@*)
-figure(fig8);
-subplot(nRows, nCols, count);
+    ylim([minY maxY]);
 
-if figureTitles
-    gtitle('Tracked Y Displacement (mm)')
-end
+    %(*@\codesubsection{Figure 8}{adplots-figure-8}@*)
+    figure(fig8);
+    subplot(nRows, nCols, count);
 
-title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
+    if figureTitles
+        gtitle('Tracked Y Displacement (mm)')
+    end
 
-xy = resultStruct.xy; Uy = resultStruct.Uy;
-scatter(xy, Uy, 'x', 'MarkerEdgeColor', cyan);
+    title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
-xlabel('Global X Coordinate (mm)');
-ylabel('Y Displacement (mm)');
-grid on;
+    xy = resultStruct.xy; Uy = resultStruct.Uy;
+    scatter(xy, Uy, 'x', 'MarkerEdgeColor', cyan);
 
-if count == 1
-    maxY = max(Uy);
-    minY = min(Uy);
+    xlabel('Global X Coordinate (mm)');
+    ylabel('Y Displacement (mm)');
+    grid on;
 
-    ceilFactor = 1e-3;
-    maxY = ceil(maxY / ceilFactor) * ceilFactor;
-    minY = floor(minY / ceilFactor) * ceilFactor;
-end
+    if count == 1
+        maxY = max(Uy);
+        minY = min(Uy);
 
-ylim([minY maxY]);
+        ceilFactor = 1e-3;
+        maxY = ceil(maxY / ceilFactor) * ceilFactor;
+        minY = floor(minY / ceilFactor) * ceilFactor;
+    end
 
-%(*@\codesubsection{Figure 9}{adplots-figure-9}@*)
-U_x = resultStruct.U_x;
-poisson_xz_mean = resultStruct.poisson.poisson_xz_mean;
-poisson_xz_median = resultStruct.poisson.poisson_xz_median;
-poisson_xy_mean = resultStruct.poisson.poisson_xy_mean;
-poisson_xy_median = resultStruct.poisson.poisson_xy_median;
+    ylim([minY maxY]);
 
-figure(fig9);
+    %(*@\codesubsection{Figure 9}{adplots-figure-9}@*)
+    U_x = resultStruct.U_x;
+    poisson_xz_mean = resultStruct.poisson.poisson_xz_mean;
+    poisson_xz_median = resultStruct.poisson.poisson_xz_median;
+    poisson_xy_mean = resultStruct.poisson.poisson_xy_mean;
+    poisson_xy_median = resultStruct.poisson.poisson_xy_median;
 
-if figureTitles
-    gtitle('Poisson''s Ratio throughout all simulation steps')
-end
+    figure(fig9);
 
-subplot(nRows, nCols, count);
-title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
+    if figureTitles
+        gtitle('Poisson''s Ratio throughout all simulation steps')
+    end
 
-hold on; grid on;
+    subplot(nRows, nCols, count);
+    title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
-% Plot Poisson ratios for xz direction (using blue colors)
-plot(U_x, poisson_xz_mean, '-', 'LineWidth', 1.5,'Color',blue);
-plot(U_x, poisson_xz_median, '--', 'LineWidth', 1.5,'Color',blue);
+    hold on; grid on;
 
-% Plot Poisson ratios for xy direction (using cyan colors)
-plot(U_x, poisson_xy_mean, '-', 'LineWidth', 1.5,'Color',cyan);
-plot(U_x, poisson_xy_median, '--', 'LineWidth', 1.5,'Color',cyan);
+    % Plot Poisson ratios for xz direction (using blue colors)
+    plot(U_x, poisson_xz_mean, '-', 'LineWidth', 1.5,'Color',blue);
+    plot(U_x, poisson_xz_median, '--', 'LineWidth', 1.5,'Color',blue);
 
-ylabel("Poisson", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
-xlabel("Applied X Displacement (mm)", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
+    % Plot Poisson ratios for xy direction (using cyan colors)
+    plot(U_x, poisson_xy_mean, '-', 'LineWidth', 1.5,'Color',cyan);
+    plot(U_x, poisson_xy_median, '--', 'LineWidth', 1.5,'Color',cyan);
 
-set(gca, 'XDir', 'reverse');
+    ylabel("Poisson", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
+    xlabel("Applied X Displacement (mm)", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
 
-%(*@\codesubsection{Figure 10}{adplots-figure-10}@*)
-strain_y_mean = resultStruct.strain.strain_y_mean;
-strain_y_median = resultStruct.strain.strain_y_median;
-strain_z_mean = resultStruct.strain.strain_z_mean;
-strain_z_median = resultStruct.strain.strain_z_median;
-stress = resultStruct.stress;
+    set(gca, 'XDir', 'reverse');
 
-figure(fig10);
+    %(*@\codesubsection{Figure 10}{adplots-figure-10}@*)
+    strain_y_mean = resultStruct.strain.strain_y_mean;
+    strain_y_median = resultStruct.strain.strain_y_median;
+    strain_z_mean = resultStruct.strain.strain_z_mean;
+    strain_z_median = resultStruct.strain.strain_z_median;
+    stress = resultStruct.stress;
 
-if figureTitles
-    gtitle('Young''s Modulus')
-end
+    figure(fig10);
 
-subplot(nRows, nCols, count);
-title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
+    if figureTitles
+        gtitle('Young''s Modulus')
+    end
 
-hold on; grid on;
-plot(abs(strain_y_mean),stress,'-','Color',blue, 'LineWidth', 1.5);
-plot(abs(strain_y_median),stress,'--','Color',blue, 'LineWidth', 1.5);
-plot(abs(strain_z_mean),stress,'-','Color',cyan, 'LineWidth', 1.5);
-plot(abs(strain_z_median),stress,'--','Color',cyan, 'LineWidth', 1.5);
+    subplot(nRows, nCols, count);
+    title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
-xlabel("Strain", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
-ylabel("Stress (MPa)", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
-drawnow;
+    hold on; grid on;
+    plot(abs(strain_y_mean),stress,'-','Color',blue, 'LineWidth', 1.5);
+    plot(abs(strain_y_median),stress,'--','Color',blue, 'LineWidth', 1.5);
+    plot(abs(strain_z_mean),stress,'-','Color',cyan, 'LineWidth', 1.5);
+    plot(abs(strain_z_median),stress,'--','Color',cyan, 'LineWidth', 1.5);
 
-count = count + 1;
+    xlabel("Strain", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
+    ylabel("Stress (MPa)", "FontName", "Helvetica", "FontAngle", "normal", "FontWeight", "normal")
+    drawnow;
+
+    count = count + 1;
 end
 
 %(*@\codesubsection{Save Figures}{adplots-save-figures}@*)

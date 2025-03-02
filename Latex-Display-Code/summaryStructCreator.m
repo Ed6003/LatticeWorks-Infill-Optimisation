@@ -139,12 +139,9 @@ data.Time = datetime(data.Time, 'InputFormat', 'dd/MM/yyyy HH:mm:ss.SSS');
 
 cFigure;
 hold on; grid on;
-% plot(data.Time, data.ProcessorTime_)
 
 time_indices = (1:numel(data.ProcessorTime_)) * 5; % 5 comes from the logging frequency (1 every 5 seconds)
 time_indices = time_indices / 60^2; % convert to hours
-
-% plot(time_indices, data.ProcessorTime_)
 
 windowSize = 3600/5; % hourly moving average (accounts for 5s sampling)
 smoothed_data = movmean(data.ProcessorTime_, windowSize);

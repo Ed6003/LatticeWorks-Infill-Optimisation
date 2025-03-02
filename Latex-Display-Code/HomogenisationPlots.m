@@ -34,7 +34,7 @@ numSteps = 6;
 selected_indices = round(linspace(1, numFiles, min(numFiles,numSteps)));
 
 nCols = ceil(sqrt(numSteps));
-nRows = ceil(numSteps / nCols);  
+nRows = ceil(numSteps / nCols);
 cFigure;
 for j = 1:length(selected_indices)
     idx = selected_indices(j);
@@ -61,7 +61,7 @@ for diagIdx = 1:6
     x = densities(:);
     y = squeeze(stiffnessData(:, diagIdx, diagIdx));
     y = y(:);
-    
+
     % original data
     if ismember(diagIdx, [1, 2, 3])
         colour = blue;
@@ -70,11 +70,11 @@ for diagIdx = 1:6
     end
 
     plot(x, y, 'LineWidth', 1.5, 'DisplayName', sprintf('C_{%d%d}', diagIdx, diagIdx),'Color',colour);
-    
+
 
     % using custom exponential model y = a*x*exp(b*x) to ensure 0 crossing
     ft = fittype('a*x*exp(b*x)', 'independent', 'x', 'dependent', 'y');
-    
+
     % linear initial guess (estimating to ensure convergence)
     valid = (x > 0) & (y > 0);
     if sum(valid) >= 2
@@ -87,11 +87,11 @@ for diagIdx = 1:6
         bInit = coeffs(2);
         aInit = exp(logAInit);
     end
-    
+
     [fitResult, gof] = fit(x, y, ft, 'StartPoint', [aInit, bInit]);
-    
+
     fitResults{diagIdx} = struct('a', fitResult.a, 'b', fitResult.b, 'Rsquare', gof.rsquare);
-    
+
     % plot fitted curves
     if ismember(diagIdx, [1, 2, 3])
         colour = red;

@@ -4,40 +4,40 @@ function isCompleted = simulationCompleted(parentDir)
 %   directory (parentDir) contains all the required simulation files and
 %   if the Figures subfolder contains all the required figure files.
 
-    % required files in main folder
-    requiredSimulationFiles = {
-        'Lattice_FEA.com', 'Lattice_FEA.dat', 'Lattice_FEA.inp', 'Lattice_FEA.msg', ...
-        'Lattice_FEA.odb', 'Lattice_FEA.prt', 'Lattice_FEA.sta', 'simulation_results.mat'
+% required files in main folder
+requiredSimulationFiles = {
+    'Lattice_FEA.com', 'Lattice_FEA.dat', 'Lattice_FEA.inp', 'Lattice_FEA.msg', ...
+    'Lattice_FEA.odb', 'Lattice_FEA.prt', 'Lattice_FEA.sta', 'simulation_results.mat'
     };
 
-    % required files in Figures subfolder
-    requiredFigureFiles = {
-        'Figure_1.fig', 'Figure_1.png', 'Figure_2.fig', 'Figure_2.png', ...
-        'Figure_3.fig', 'Figure_3.png', 'Figure_4.fig', 'Figure_4.png', ...
-        'Figure_5.fig', 'Figure_5.png', 'Figure_6.fig', 'Figure_6.png', ...
-        'Figure_7.fig', 'Figure_7.png', 'Figure_8.fig', 'Figure_8.png', ...
-        'Figure_9.fig', 'Figure_9.png', 'Figure_10.fig', 'Figure_10.png', ...
-        'Figure_11.fig', 'Figure_11.png', 'Figure_12.fig', 'Figure_12.png', ...
-        'Figure_13.fig', 'Figure_13.png', 'Figure_14.fig', 'Figure_14.png', ...
-        'Figure_15.fig', 'Figure_15.png', ...
+% required files in Figures subfolder
+requiredFigureFiles = {
+    'Figure_1.fig', 'Figure_1.png', 'Figure_2.fig', 'Figure_2.png', ...
+    'Figure_3.fig', 'Figure_3.png', 'Figure_4.fig', 'Figure_4.png', ...
+    'Figure_5.fig', 'Figure_5.png', 'Figure_6.fig', 'Figure_6.png', ...
+    'Figure_7.fig', 'Figure_7.png', 'Figure_8.fig', 'Figure_8.png', ...
+    'Figure_9.fig', 'Figure_9.png', 'Figure_10.fig', 'Figure_10.png', ...
+    'Figure_11.fig', 'Figure_11.png', 'Figure_12.fig', 'Figure_12.png', ...
+    'Figure_13.fig', 'Figure_13.png', 'Figure_14.fig', 'Figure_14.png', ...
+    'Figure_15.fig', 'Figure_15.png', ...
     };
 
-    % check if the base directory exists
-    if ~isfolder(parentDir)
-        isCompleted = 0;
-        return;
-    end
+% check if the base directory exists
+if ~isfolder(parentDir)
+    isCompleted = 0;
+    return;
+end
 
-    % check if all required simulation files exist in the base directory.
-    simulationFilesExist = all(cellfun(@(f) exist(fullfile(parentDir, f), 'file') == 2, requiredSimulationFiles));
+% check if all required simulation files exist in the base directory.
+simulationFilesExist = all(cellfun(@(f) exist(fullfile(parentDir, f), 'file') == 2, requiredSimulationFiles));
 
-    % check if folder exists
-    figuresDir = fullfile(parentDir, 'Figures');
-    if ~isfolder(figuresDir)
-        figureFilesExist = false;
-    else
-        figureFilesExist = all(cellfun(@(f) exist(fullfile(figuresDir, f), 'file') == 2, requiredFigureFiles));
-    end
+% check if folder exists
+figuresDir = fullfile(parentDir, 'Figures');
+if ~isfolder(figuresDir)
+    figureFilesExist = false;
+else
+    figureFilesExist = all(cellfun(@(f) exist(fullfile(figuresDir, f), 'file') == 2, requiredFigureFiles));
+end
 
-    isCompleted = simulationFilesExist && figureFilesExist;
+isCompleted = simulationFilesExist && figureFilesExist;
 end
