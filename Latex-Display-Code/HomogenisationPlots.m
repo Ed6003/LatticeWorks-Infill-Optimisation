@@ -28,7 +28,20 @@ end
 
 densities = vertcat(tables{:,2});
 
+%(*@\codesubsection{Extract Infill Densities}{homogenisation-extract-infill-densities}@*)
+% Extract infill densities and stiffness matrices
+numFiles = length(tables);
+densities = zeros(numFiles, 1);
+stiffnessData = zeros(numFiles, 6, 6); % 3D array: [density, row, col]
+
+for i = 1:numFiles
+    densities(i) = tables{i,2};        % Get density from second column
+    currentTable = tables{i,1};       % Get 6x6 table from first column
+    stiffnessData(i, :, :) = currentTable{:,:}; % Convert table to numeric array
+end
+
 %(*@\codesubsection{Stiffness Matrix Heatmaps}{homogenisation-stiffness-matrix-heatmaps}@*)
+numFiles = numel(sortedFilenames);
 numSteps = 6;
 selected_indices = round(linspace(1, numFiles, min(numFiles,numSteps)));
 
