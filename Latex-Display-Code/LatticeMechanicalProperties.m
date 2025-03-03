@@ -80,7 +80,7 @@ try
 
         tolDir = 0.05;
 
-        %(*@\codesubsection{Create TPMS}{lattice-create-TPMS}@*)
+        %(*@\codesubsection{Create \figurednt{TPMS}}{lattice-create-TPMS}@*)
         [S,X,Y,Z] = gradTPMS(inputStruct);
 
         % Isosurface

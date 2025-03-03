@@ -190,7 +190,7 @@ else
     rho_Fb = rho_F(indBoundaryFaces);
 end
 
-%(*@\codesubsection{Create TPMS}{topopt-create-TPMS}@*)
+%(*@\codesubsection{Create \figurednt{TPMS}}{topopt-create-TPMS}@*)
 k = pi; % k is grid size
 
 % Generate TPMS function S
@@ -224,7 +224,7 @@ sv3(S); colormap warmcold;
 Sg(~insideMask) = NaN;
 sv3(Sg); colormap warmcold;
 
-%(*@\codesubsection{Create \dnt{Generated Gear Geometry}{TPMS}}{opt-generated-gear-geometry}@*)
+%(*@\codesubsection{Create Generated Gear Geometry}{opt-generated-gear-geometry}@*)
 cFigure;
 patch('Faces', Fsn, 'Vertices', Vsn, 'FaceColor', 'blue', 'EdgeColor', 'none');
 view(3); axis equal; camlight; lighting gouraud;
