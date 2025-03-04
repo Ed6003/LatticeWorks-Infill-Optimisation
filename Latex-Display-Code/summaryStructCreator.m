@@ -40,7 +40,7 @@ else
                 summaryStruct(count).(fieldName) = [];  % Or assign a default value
             end
         end
-        count = count + 1
+        count = count + 1;
     end
 
     matlabPath=fullfile(defaultFolder,'!Summary','simulation_results_summary.mat');
@@ -59,7 +59,7 @@ plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_
 plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_median), '--','Color',cyan, 'LineWidth', 1.5)
 
 
-title("Calculated Poisson's Ratio")
+title("Calculated Poisson's Ratio",'FontSize',14)
 legend('XY Mean', 'XY Median', 'XZ Mean', 'XZ Median', 'Location','best');
 xlabel("Infill Percentage (%)")
 ylabel("Poisson's Ratio")
@@ -74,7 +74,7 @@ plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_mod
 plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_mean),'Color',cyan, 'LineWidth', 1.5)
 plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_median), '--','Color',cyan, 'LineWidth', 1.5)
 
-title("Calculated Young's Moduli")
+title("Calculated Young's Moduli",'FontSize',14)
 legend('XZ Mean', 'XY Mean', 'XZ Median', 'XY Median','Location','best');
 xlabel("Infill Percentage (%)")
 ylabel("Young's Modulus (MPa)")
@@ -87,7 +87,7 @@ plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_mod
 plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_mean_R_squared),'Color',cyan, 'LineWidth', 1.5)
 plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_median_R_squared), '--','Color',cyan, 'LineWidth', 1.5)
 
-title("Calculated Young's Moduli R^2 Fit")
+title("Calculated Young's Moduli R^2 Fit",'FontSize',14)
 legend('XZ Mean', 'XY Mean', 'XZ Median', 'XY Median','Location','best');
 xlabel("Infill Percentage (%)")
 ylabel("Young's Modulus R^2 Linear Fit")
@@ -97,7 +97,7 @@ cFigure;
 hold on; grid on;
 plot(vertcat(summaryStruct.infill_percentage), (vertcat(summaryStruct.distortedElements)./vertcat(summaryStruct.numElements)*100),'Color',blue, 'LineWidth', 1.5)
 
-title("Distorted Elements")
+title("Distorted Elements",'FontSize',14)
 xlabel("Infill Percentage (%)")
 ylabel("Distorted Elements (%)")
 
@@ -106,7 +106,7 @@ cFigure;
 hold on; grid on;
 plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.level_set),'Color',blue, 'LineWidth', 1.5)
 
-title("Infill Percentage against Level-Set")
+title("Infill Percentage against Level-Set",'FontSize',14)
 xlabel("Infill Percentage (%)")
 ylabel("Gyroid TPMS Level-Set")
 
@@ -127,7 +127,7 @@ plot(infillPercentages, timeDifferencesFilled,'Color',blue, 'LineWidth', 1.5);
 
 xlabel("Infill Percentage (%)");
 ylabel("Time Taken (minutes)");
-title("Simulation Time at each Infill Percentage");
+title("Simulation Time at each Infill Percentage",'FontSize',14);
 
 %(*@\codesubsection{Figure 7}{summarystruct-figure-7}@*)
 master_csv = 'C:\Users\rusco\OneDrive - University of Warwick\Admin\Archives\Documents\GitHub\LatticeWorks\LogsActual\master.csv';
@@ -145,7 +145,7 @@ windowSize = 3600/5; % hourly moving average (accounts for 5s sampling)
 smoothed_data = movmean(data.ProcessorTime_, windowSize);
 plot(time_indices, smoothed_data,'Color',blue, 'LineWidth', 1)
 
-title("CPU Load Hourly Moving Average")
+title("CPU Load Hourly Moving Average",'FontSize',14)
 xlabel("Computing Hours")
 ylabel("CPU Load (%)")
 
@@ -165,11 +165,26 @@ hold on; grid on;
 plot(infillPercentages, TrackY,'Color',blue, 'LineWidth', 1.5);
 plot(infillPercentages, TrackZ,'Color',cyan, 'LineWidth', 1.5);
 
-
 xlabel("Infill Percentage (%)");
 ylabel("Tracked Nodes");
-title("Simulation Time at each Infill Percentage");
+title("Tracked Nodes at each Infill Percentage",'FontSize',14);
 legend('Y Tracked','Z Tracked','Location','best');
+
+%(*@\codesubsection{Figure 9}{summarystruct-figure-9}@*)
+stressSteps = zeros(1,numEntries);
+
+cFigure;
+hold on; grid on;
+for i = 1:numEntries
+    stressSteps(i) = summaryStruct(i).stress(end);
+end
+
+plot(infillPercentages, stressSteps,'Color',blue, 'LineWidth', 1.5);
+
+xlabel("Infill Percentage (%)");
+ylabel("Stress (MPa)");
+title("Stress at each Infill Percentage",'FontSize',14);
+% legend('Y Tracked','Z Tracked','Location','best');
 
 savePath = fullfile(defaultFolder,'!Summary');
 mkdir(savePath);

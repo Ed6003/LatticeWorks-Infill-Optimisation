@@ -53,7 +53,7 @@ for i = original_points(selected_idx)
     title(sprintf('Isovalue: %.3g',resultStruct.level_set));
 
     if figureTitles
-        gtitle('Iso-surface Orthographic Projection');
+        gtitle('Iso-surface Orthographic Projection','FontSize',14);
     end
 
     % title('Orthographic Projection');
@@ -71,7 +71,7 @@ for i = original_points(selected_idx)
     title(sprintf('Isovalue: %.3g',resultStruct.level_set));
 
     if figureTitles
-        gtitle('Iso-surface generation');
+        gtitle('Iso-surface generation','FontSize',14);
     end
 
     hp3 = gpatch(f,v,c,'none', 1);
@@ -86,7 +86,7 @@ for i = original_points(selected_idx)
     subplot(nRows, nCols, count); hold on;
 
     if figureTitles
-        gtitle('Geogram remeshed');
+        gtitle('Geogram remeshed','FontSize',14);
     end
 
     gpatch(F,V,'w','k',1);
@@ -109,7 +109,7 @@ for i = original_points(selected_idx)
     title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
     if figureTitles
-        gtitle('Logic Defined Node Sets');
+        gtitle('Logic Defined Node Sets','FontSize',14);
     end
 
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -133,7 +133,7 @@ for i = original_points(selected_idx)
     title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
 
     if figureTitles
-        gtitle('Boundary Conditions');
+        gtitle('Boundary Conditions','FontSize',14);
     end
 
     xlabel('X','FontSize',fontSize); ylabel('Y','FontSize',fontSize); zlabel('Z','FontSize',fontSize);
@@ -154,7 +154,7 @@ for i = original_points(selected_idx)
     subplot(nRows, nCols, count);
 
     if figureTitles
-        gtitle('Tracked Z Displacement (mm)')
+        gtitle('Tracked Z Displacement (mm)','FontSize',14)
     end
 
     title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
@@ -182,7 +182,7 @@ for i = original_points(selected_idx)
     subplot(nRows, nCols, count);
 
     if figureTitles
-        gtitle('Tracked Y Displacement (mm)')
+        gtitle('Tracked Y Displacement (mm)','FontSize',14)
     end
 
     title(sprintf('Infill: %.3g%%',resultStruct.infill_percentage));
@@ -215,7 +215,7 @@ for i = original_points(selected_idx)
     figure(fig9);
 
     if figureTitles
-        gtitle('Poisson''s Ratio throughout all simulation steps')
+        gtitle('Poisson''s Ratio throughout all simulation steps','FontSize',14)
     end
 
     subplot(nRows, nCols, count);
@@ -246,7 +246,7 @@ for i = original_points(selected_idx)
     figure(fig10);
 
     if figureTitles
-        gtitle('Young''s Modulus')
+        gtitle('Young''s Modulus','FontSize',14)
     end
 
     subplot(nRows, nCols, count);
