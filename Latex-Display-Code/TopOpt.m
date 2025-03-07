@@ -30,7 +30,7 @@ teeth_force = (torque / teeth_distance) / numel(teeth_faces); % N
 area_mm2 = 66.441 * 1e-6;
 pressure = teeth_force / area_mm2;
 
-Apply pressure load to each gear tooth face
+% Apply pressure load to each gear tooth face
 structuralBoundaryLoad(model,"Face",teeth_faces,"Pressure",pressure);
 
 structuralProperties(model,"YoungsModulus",material_E,"PoissonsRatio",material_v);

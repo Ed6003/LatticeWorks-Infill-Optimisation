@@ -53,16 +53,24 @@ cyan  = [0.3010, 0.7450, 0.9330];  % "#4DBEEE"
 %(*@\codesubsection{Figure 1}{summarystruct-figure-1}@*)
 cFigure;
 hold on; grid on;
-plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean),'Color',blue, 'LineWidth', 1.5)
-plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_median), '--','Color',blue, 'LineWidth', 1.5)
-plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_mean),'Color',cyan, 'LineWidth', 1.5)
-plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_median), '--','Color',cyan, 'LineWidth', 1.5)
 
+% compute error as difference between mean and median
+error_xy = abs(vertcat(summaryStruct.poisson_xy_mean) - vertcat(summaryStruct.poisson_xy_median));
+error_xz = abs(vertcat(summaryStruct.poisson_xz_mean) - vertcat(summaryStruct.poisson_xz_median));
 
-title("Calculated Poisson's Ratio",'FontSize',14)
-legend('XY Mean', 'XY Median', 'XZ Mean', 'XZ Median', 'Location','best');
-xlabel("Infill Percentage (%)")
-ylabel("Poisson's Ratio")
+h1 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean), 'Color', blue, 'LineWidth', 1.5);
+h2 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_median), '--', 'Color', blue, 'LineWidth', 1.5);
+h3 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_mean), 'Color', cyan, 'LineWidth', 1.5);
+h4 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_median), '--', 'Color', cyan, 'LineWidth', 1.5);
+
+% error bars, assuming between mean and median
+errorbar(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean), error_xy, 'o', 'Color', blue, 'CapSize', 5);
+errorbar(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_mean), error_xz, 'o', 'Color', cyan, 'CapSize', 5);
+
+title("Calculated Poisson's Ratio", 'FontSize', 14);
+legend([h1, h2, h3, h4], 'XY Mean', 'XY Median', 'XZ Mean', 'XZ Median', 'Location', 'best');
+xlabel("Infill Percentage (%)");
+ylabel("Poisson's Ratio");
 
 %(*@\codesubsection{Figure 2}{summarystruct-figure-2}@*)
 youngs_modulus = vertcat(summaryStruct.youngs_modulus);
@@ -185,6 +193,18 @@ xlabel("Infill Percentage (%)");
 ylabel("Stress (MPa)");
 title("Stress at each Infill Percentage",'FontSize',14);
 % legend('Y Tracked','Z Tracked','Location','best');
+
+%(*@\codesubsection{Figure 10}{summarystruct-figure-10}@*)
+% plot error avg
+figure; 
+hold on; grid on;
+plot(vertcat(summaryStruct.infill_percentage), error_xy, 'Color', blue, 'LineWidth', 1.5);
+plot(vertcat(summaryStruct.infill_percentage), error_xz, 'Color', cyan, 'LineWidth', 1.5);
+
+title("Average Error in Poisson's Ratio", 'FontSize', 14);
+xlabel("Infill Percentage (%)");
+ylabel("Average Absolute Error");
+legend({'XY Error', 'XZ Error'}, 'Location', 'best');
 
 savePath = fullfile(defaultFolder,'!Summary');
 mkdir(savePath);
