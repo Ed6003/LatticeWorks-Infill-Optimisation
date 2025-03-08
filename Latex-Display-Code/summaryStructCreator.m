@@ -50,27 +50,28 @@ end
 blue   = [0, 0.4470, 0.7410];  % "#0072BD"
 cyan  = [0.3010, 0.7450, 0.9330];  % "#4DBEEE"
 
+%(*@
+for i = 1:numel(summaryStruct)
+    summaryStruct(i).youngs_modulus.youngs_modulus_xz_mean = summaryStruct(i).youngs_modulus.youngs_modulus_xz_mean / 10;
+    summaryStruct(i).youngs_modulus.youngs_modulus_xz_median = summaryStruct(i).youngs_modulus.youngs_modulus_xz_median / 10;
+    summaryStruct(i).youngs_modulus.youngs_modulus_xy_mean = summaryStruct(i).youngs_modulus.youngs_modulus_xy_mean / 10;
+    summaryStruct(i).youngs_modulus.youngs_modulus_xy_median = summaryStruct(i).youngs_modulus.youngs_modulus_xy_median / 10;
+end
+%@*)
+
 %(*@\codesubsection{Figure 1}{summarystruct-figure-1}@*)
 cFigure;
 hold on; grid on;
+plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean),'Color',blue, 'LineWidth', 1.5)
+plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_median), '--','Color',blue, 'LineWidth', 1.5)
+plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_mean),'Color',cyan, 'LineWidth', 1.5)
+plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_median), '--','Color',cyan, 'LineWidth', 1.5)
 
-% compute error as difference between mean and median
-error_xy = abs(vertcat(summaryStruct.poisson_xy_mean) - vertcat(summaryStruct.poisson_xy_median));
-error_xz = abs(vertcat(summaryStruct.poisson_xz_mean) - vertcat(summaryStruct.poisson_xz_median));
 
-h1 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean), 'Color', blue, 'LineWidth', 1.5);
-h2 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_median), '--', 'Color', blue, 'LineWidth', 1.5);
-h3 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_mean), 'Color', cyan, 'LineWidth', 1.5);
-h4 = plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_median), '--', 'Color', cyan, 'LineWidth', 1.5);
-
-% error bars, assuming between mean and median
-errorbar(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean), error_xy, 'o', 'Color', blue, 'CapSize', 5);
-errorbar(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_mean), error_xz, 'o', 'Color', cyan, 'CapSize', 5);
-
-title("Calculated Poisson's Ratio", 'FontSize', 14);
-legend([h1, h2, h3, h4], 'XY Mean', 'XY Median', 'XZ Mean', 'XZ Median', 'Location', 'best');
-xlabel("Infill Percentage (%)");
-ylabel("Poisson's Ratio");
+title("Calculated Poisson's Ratio",'FontSize',14)
+legend('XY Mean', 'XY Median', 'XZ Mean', 'XZ Median', 'Location','best');
+xlabel("Infill Percentage (%)")
+ylabel("Poisson's Ratio")
 
 %(*@\codesubsection{Figure 2}{summarystruct-figure-2}@*)
 youngs_modulus = vertcat(summaryStruct.youngs_modulus);
@@ -195,17 +196,100 @@ title("Stress at each Infill Percentage",'FontSize',14);
 % legend('Y Tracked','Z Tracked','Location','best');
 
 %(*@\codesubsection{Figure 10}{summarystruct-figure-10}@*)
-% plot error avg
-figure; 
+% preallocate
+n = numel(summaryStruct);
+infill = zeros(n,1);
+poisson_xy_median_val = zeros(n,1);
+poisson_xy_mad = zeros(n,1);
+poisson_xz_median_val = zeros(n,1);
+poisson_xz_mad = zeros(n,1);
+
+for i = 1:n
+    infill(i) = summaryStruct(i).infill_percentage;
+    dataXy = [summaryStruct(i).poisson_xy_mean, summaryStruct(i).poisson_xy_median];
+    poisson_xy_median_val(i) = median(dataXy);
+    poisson_xy_mad(i) = mad(dataXy, 1);
+    dataXz = [summaryStruct(i).poisson_xz_mean, summaryStruct(i).poisson_xz_median];
+    poisson_xz_median_val(i) = median(dataXz);
+    poisson_xz_mad(i) = mad(dataXz, 1);
+end
+
+figure;
 hold on; grid on;
-plot(vertcat(summaryStruct.infill_percentage), error_xy, 'Color', blue, 'LineWidth', 1.5);
-plot(vertcat(summaryStruct.infill_percentage), error_xz, 'Color', cyan, 'LineWidth', 1.5);
 
-title("Average Error in Poisson's Ratio", 'FontSize', 14);
+hXy = errorbar(infill, poisson_xy_median_val, poisson_xy_mad, 'o-', ...
+    'LineWidth', 1.5, 'CapSize', 5, 'Color', blue);
+
+% create 95% heuristic region for xy
+xFill = [infill; flipud(infill)];
+ciXyUpper = poisson_xy_median_val + 1.96 * poisson_xy_mad; % equal to 95% confidence
+ciXyLower = poisson_xy_median_val - 1.96 * poisson_xy_mad;
+yFillXy = [ciXyLower; flipud(ciXyUpper)];
+fill(xFill, yFillXy, blue, 'FaceAlpha', 0.2, 'EdgeColor', 'none');
+
+% Plot XZ with error bars using MAD (cyan)
+hXz = errorbar(infill, poisson_xz_median_val, poisson_xz_mad, 'o-', ...
+    'LineWidth', 1.5, 'CapSize', 5, 'Color', cyan);
+
+% create xz heuristic
+ciXzUpper = poisson_xz_median_val + 1.96 * poisson_xz_mad;
+ciXzLower = poisson_xz_median_val - 1.96 * poisson_xz_mad;
+yFillXz = [ciXzLower; flipud(ciXzUpper)];
+fill(xFill, yFillXz, cyan, 'FaceAlpha', 0.2, 'EdgeColor', 'none');
+
+title("Calculated Poisson's Ratio with Robust Uncertainty", 'FontSize', 14);
 xlabel("Infill Percentage (%)");
-ylabel("Average Absolute Error");
-legend({'XY Error', 'XZ Error'}, 'Location', 'best');
+ylabel("Poisson's Ratio");
+legend([hXy, hXz], 'XY Median ± MAD', 'XZ Median ± MAD', 'Location', 'best');
+hold off;
+%%
+%(*@\codesubsection{Figure 11}{summarystruct-figure-11}@*)
+youngsModulus = vertcat(summaryStruct.youngs_modulus);
+infillPercentage = vertcat(summaryStruct.infill_percentage);
 
+n = numel(summaryStruct);
+youngs_modulus_xy_median = zeros(n, 1);
+youngs_modulus_xy_mad = zeros(n, 1);
+youngs_modulus_xz_median = zeros(n, 1);
+youngs_modulus_xz_mad = zeros(n, 1);
+
+for i = 1:n
+    dataXy = [youngsModulus(i).youngs_modulus_xy_mean, youngsModulus(i).youngs_modulus_xy_median];
+    youngs_modulus_xy_median(i) = median(dataXy);
+    youngs_modulus_xy_mad(i) = mad(dataXy, 1);
+    
+    dataXz = [youngsModulus(i).youngs_modulus_xz_mean, youngsModulus(i).youngs_modulus_xz_median];
+    youngs_modulus_xz_median(i) = median(dataXz);
+    youngs_modulus_xz_mad(i) = mad(dataXz, 1);
+end
+
+figure;
+hold on; grid on;
+
+hXy = errorbar(infillPercentage, youngs_modulus_xy_median, youngs_modulus_xy_mad, 'o-', ...
+    'LineWidth', 1.5, 'CapSize', 5, 'Color', blue);
+hXz = errorbar(infillPercentage, youngs_modulus_xz_median, youngs_modulus_xz_mad, 'o-', ...
+    'LineWidth', 1.5, 'CapSize', 5, 'Color', cyan);
+
+xFill = [infillPercentage; flipud(infillPercentage)];
+
+ciXyLower = youngs_modulus_xy_median - 1.96 * youngs_modulus_xy_mad;
+ciXyUpper = youngs_modulus_xy_median + 1.96 * youngs_modulus_xy_mad;
+yFillXy = [ciXyLower; flipud(ciXyUpper)];
+fill(xFill, yFillXy, blue, 'FaceAlpha', 0.2, 'EdgeColor', 'none');
+
+ciXzLower = youngs_modulus_xz_median - 1.96 * youngs_modulus_xz_mad;
+ciXzUpper = youngs_modulus_xz_median + 1.96 * youngs_modulus_xz_mad;
+yFillXz = [ciXzLower; flipud(ciXzUpper)];
+fill(xFill, yFillXz, cyan, 'FaceAlpha', 0.4, 'EdgeColor', 'none');
+
+title("Calculated Young's Moduli with Uncertainty", 'FontSize', 14);
+legend([hXy, hXz], 'XY Median ± MAD', 'XZ Median ± MAD', 'Location', 'best');
+xlabel("Infill Percentage (%)");
+ylabel("Young's Modulus (MPa)");
+hold off;
+
+%%
 savePath = fullfile(defaultFolder,'!Summary');
 mkdir(savePath);
 
