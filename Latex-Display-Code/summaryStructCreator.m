@@ -52,6 +52,7 @@ cyan  = [0.3010, 0.7450, 0.9330];  % "#4DBEEE"
 
 %(*@
 for i = 1:numel(summaryStruct)
+    % amends unit conversion
     summaryStruct(i).youngs_modulus.youngs_modulus_xz_mean = summaryStruct(i).youngs_modulus.youngs_modulus_xz_mean / 10;
     summaryStruct(i).youngs_modulus.youngs_modulus_xz_median = summaryStruct(i).youngs_modulus.youngs_modulus_xz_median / 10;
     summaryStruct(i).youngs_modulus.youngs_modulus_xy_mean = summaryStruct(i).youngs_modulus.youngs_modulus_xy_mean / 10;
@@ -242,7 +243,7 @@ xlabel("Infill Percentage (%)");
 ylabel("Poisson's Ratio");
 legend([hXy, hXz], 'XY Median ± MAD', 'XZ Median ± MAD', 'Location', 'best');
 hold off;
-%%
+
 %(*@\codesubsection{Figure 11}{summarystruct-figure-11}@*)
 youngsModulus = vertcat(summaryStruct.youngs_modulus);
 infillPercentage = vertcat(summaryStruct.infill_percentage);
@@ -289,7 +290,6 @@ xlabel("Infill Percentage (%)");
 ylabel("Young's Modulus (MPa)");
 hold off;
 
-%%
 savePath = fullfile(defaultFolder,'!Summary');
 mkdir(savePath);
 
