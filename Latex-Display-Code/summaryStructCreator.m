@@ -16,7 +16,6 @@ else
 
     for i = original_points(selected_idx)
 
-        defaultFolder = fullfile('D:','TechnicalReport','LatticeProperties'); % changed to external hard drive
         savePath=fullfile(defaultFolder,sprintf('%.5g_Lattice_Density',i));
         matlabPath=fullfile(savePath,'simulation_results.mat');
 
@@ -40,6 +39,7 @@ else
                 summaryStruct(count).(fieldName) = [];  % Or assign a default value
             end
         end
+        disp(count);
         count = count + 1;
     end
 
@@ -49,16 +49,6 @@ end
 
 blue   = [0, 0.4470, 0.7410];  % "#0072BD"
 cyan  = [0.3010, 0.7450, 0.9330];  % "#4DBEEE"
-
-%(*@
-for i = 1:numel(summaryStruct)
-    % amends unit conversion
-    summaryStruct(i).youngs_modulus.youngs_modulus_xz_mean = summaryStruct(i).youngs_modulus.youngs_modulus_xz_mean / 10;
-    summaryStruct(i).youngs_modulus.youngs_modulus_xz_median = summaryStruct(i).youngs_modulus.youngs_modulus_xz_median / 10;
-    summaryStruct(i).youngs_modulus.youngs_modulus_xy_mean = summaryStruct(i).youngs_modulus.youngs_modulus_xy_mean / 10;
-    summaryStruct(i).youngs_modulus.youngs_modulus_xy_median = summaryStruct(i).youngs_modulus.youngs_modulus_xy_median / 10;
-end
-%@*)
 
 %(*@\codesubsection{Figure 1}{summarystruct-figure-1}@*)
 cFigure;
@@ -75,19 +65,76 @@ xlabel("Infill Percentage (%)")
 ylabel("Poisson's Ratio")
 
 %(*@\codesubsection{Figure 2}{summarystruct-figure-2}@*)
+% using exclusively snake-case instead of camelCase (complex variable names)
 youngs_modulus = vertcat(summaryStruct.youngs_modulus);
 
-cFigure;
-hold on; grid on;
-plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xy_mean),'Color',blue, 'LineWidth', 1.5)
-plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xy_median), '--','Color',blue, 'LineWidth', 1.5)
-plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_mean),'Color',cyan, 'LineWidth', 1.5)
-plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_median), '--','Color',cyan, 'LineWidth', 1.5)
+x = vertcat(summaryStruct.infill_percentage);
+E_xy_mean = vertcat(youngs_modulus.youngs_modulus_xy_mean);
+E_xy_median = vertcat(youngs_modulus.youngs_modulus_xy_median);
+E_xz_mean = vertcat(youngs_modulus.youngs_modulus_xz_mean);
+E_xz_median = vertcat(youngs_modulus.youngs_modulus_xz_median);
 
-title("Calculated Young's Moduli",'FontSize',14)
-legend('XZ Mean', 'XY Mean', 'XZ Median', 'XY Median','Location','best');
-xlabel("Infill Percentage (%)")
-ylabel("Young's Modulus (MPa)")
+% exponential asymptotic function
+exp_model = @(b, x) b(2) - b(2) * exp(-b(3) * x); % E_inf - A * exp(-B * x)
+
+% initial Guess for Parameters [E_inf, A, B]
+b0 = [max(E_xy_mean), max(E_xy_mean) - min(E_xy_mean), 0.1];
+
+% fit the Model Using Nonlinear Least Squares
+[b_fit_xy_mean,~,~,~,sse_xy_mean] = nlinfit(x, E_xy_mean, exp_model, b0);
+[b_fit_xy_median,~,~,~,sse_xy_median] = nlinfit(x, E_xy_median, exp_model, b0);
+[b_fit_xz_mean,~,~,~,sse_xz_mean] = nlinfit(x, E_xz_mean, exp_model, b0);
+[b_fit_xz_median,~,~,~,sse_xz_median] = nlinfit(x, E_xz_median, exp_model, b0);
+% nlinfit does not output full R^2 so it needs to be done manually
+% use R^2 = 1 - SSE/SST
+% https://uk.mathworks.com/help/stats/coefficient-of-determination-r-squared.html
+
+fprintf('XY Mean Coefficients: a = %.4f, b = %.4f, c = %.4f\n', b_fit_xy_mean);
+fprintf('XY Median Coefficients: a = %.4f, b = %.4f, c = %.4f\n', b_fit_xy_median);
+fprintf('XZ Mean Coefficients: a = %.4f, b = %.4f, c = %.4f\n', b_fit_xz_mean);
+fprintf('XZ Median Coefficients: a = %.4f, b = %.4f, c = %.4f\n', b_fit_xz_median);
+
+% generate Fitted Curves
+x_fit = linspace(min(x), max(x), 100);
+E_xy_mean_fit = exp_model(b_fit_xy_mean, x_fit);
+E_xy_median_fit = exp_model(b_fit_xy_median, x_fit);
+E_xz_mean_fit = exp_model(b_fit_xz_mean, x_fit);
+E_xz_median_fit = exp_model(b_fit_xz_median, x_fit);
+
+% compute SST
+sst_xy_mean = sum((E_xy_mean - mean(E_xy_mean)).^2);
+sst_xy_median = sum((E_xy_median - mean(E_xy_median)).^2);
+sst_xz_mean = sum((E_xz_mean - mean(E_xz_mean)).^2);
+sst_xz_median = sum((E_xz_median - mean(E_xz_median)).^2);
+
+% compute R^2 for each fit
+R2_xy_mean = 1 - (sse_xy_mean / sst_xy_mean);
+R2_xy_median = 1 - (sse_xy_median / sst_xy_median);
+R2_xz_mean = 1 - (sse_xz_mean / sst_xz_mean);
+R2_xz_median = 1 - (sse_xz_median / sst_xz_median);
+
+fprintf("XY mean R^2: %g\nXY median R^2: %g\nXZ mean R^2: %g\nXZ median R^2: %g\n", ...
+    R2_xy_mean, R2_xy_median, R2_xz_mean, R2_xz_median);
+
+% plotting
+cFigure; hold on; grid on;
+plot(x, E_xy_mean, 'o', 'Color', blue, 'MarkerFaceColor', blue);
+plot(x_fit, E_xy_mean_fit, '-', 'Color', blue, 'LineWidth', 1.5);
+
+plot(x, E_xy_median, 'o', 'Color', blue, 'MarkerFaceColor', 'none');
+plot(x_fit, E_xy_median_fit, '--', 'Color', blue, 'LineWidth', 1.5);
+
+plot(x, E_xz_mean, 'o', 'Color', cyan, 'MarkerFaceColor', cyan);
+plot(x_fit, E_xz_mean_fit, '-', 'Color', cyan, 'LineWidth', 1.5);
+
+plot(x, E_xz_median, 'o', 'Color', cyan, 'MarkerFaceColor', 'none');
+plot(x_fit, E_xz_median_fit, '--', 'Color', cyan, 'LineWidth', 1.5);
+
+title("Exponential Asymptotic Fit for Young's Moduli", 'FontSize', 14);
+legend('XY Mean Data', 'XY Mean Fit', 'XY Median Data', 'XY Median Fit', ...
+       'XZ Mean Data', 'XZ Mean Fit', 'XZ Median Data', 'XZ Median Fit', 'Location', 'best');
+xlabel("Infill Percentage (%)");
+ylabel("Young's Modulus (MPa)");
 
 %(*@\codesubsection{Figure 3}{summarystruct-figure-3}@*)
 cFigure;
@@ -196,6 +243,7 @@ ylabel("Stress (MPa)");
 title("Stress at each Infill Percentage",'FontSize',14);
 % legend('Y Tracked','Z Tracked','Location','best');
 
+%%
 %(*@\codesubsection{Figure 10}{summarystruct-figure-10}@*)
 % preallocate
 n = numel(summaryStruct);
@@ -218,8 +266,9 @@ end
 figure;
 hold on; grid on;
 
-hXy = errorbar(infill, poisson_xy_median_val, poisson_xy_mad, 'o-', ...
-    'LineWidth', 1.5, 'CapSize', 5, 'Color', blue);
+% plot XZ using MAD (cyan)
+hXy = plot(infill, poisson_xy_median_val, 'o-', ...
+    'LineWidth', 1.5, 'Color', blue);
 
 % create 95% heuristic region for xy
 xFill = [infill; flipud(infill)];
@@ -228,21 +277,22 @@ ciXyLower = poisson_xy_median_val - 1.96 * poisson_xy_mad;
 yFillXy = [ciXyLower; flipud(ciXyUpper)];
 fill(xFill, yFillXy, blue, 'FaceAlpha', 0.2, 'EdgeColor', 'none');
 
-% Plot XZ with error bars using MAD (cyan)
-hXz = errorbar(infill, poisson_xz_median_val, poisson_xz_mad, 'o-', ...
-    'LineWidth', 1.5, 'CapSize', 5, 'Color', cyan);
+hXz = plot(infill, poisson_xz_median_val, 'o-', ...
+    'LineWidth', 1.5, 'Color', cyan);
 
 % create xz heuristic
 ciXzUpper = poisson_xz_median_val + 1.96 * poisson_xz_mad;
 ciXzLower = poisson_xz_median_val - 1.96 * poisson_xz_mad;
 yFillXz = [ciXzLower; flipud(ciXzUpper)];
-fill(xFill, yFillXz, cyan, 'FaceAlpha', 0.2, 'EdgeColor', 'none');
+fill(xFill, yFillXz, cyan, 'FaceAlpha', 0.4, 'EdgeColor', 'none');
 
 title("Calculated Poisson's Ratio with Robust Uncertainty", 'FontSize', 14);
 xlabel("Infill Percentage (%)");
 ylabel("Poisson's Ratio");
 legend([hXy, hXz], 'XY Median ± MAD', 'XZ Median ± MAD', 'Location', 'best');
 hold off;
+
+%%
 
 %(*@\codesubsection{Figure 11}{summarystruct-figure-11}@*)
 youngsModulus = vertcat(summaryStruct.youngs_modulus);
@@ -267,10 +317,10 @@ end
 figure;
 hold on; grid on;
 
-hXy = errorbar(infillPercentage, youngs_modulus_xy_median, youngs_modulus_xy_mad, 'o-', ...
-    'LineWidth', 1.5, 'CapSize', 5, 'Color', blue);
-hXz = errorbar(infillPercentage, youngs_modulus_xz_median, youngs_modulus_xz_mad, 'o-', ...
-    'LineWidth', 1.5, 'CapSize', 5, 'Color', cyan);
+hXy = plot(infillPercentage, youngs_modulus_xy_median, 'o-', ...
+    'LineWidth', 1.5, 'Color', blue);
+hXz = plot(infillPercentage, youngs_modulus_xz_median, 'o-', ...
+    'LineWidth', 1.5, 'Color', cyan);
 
 xFill = [infillPercentage; flipud(infillPercentage)];
 
@@ -296,4 +346,4 @@ mkdir(savePath);
 figurePath = fullfile(savePath,'Summary Figures');
 mkdir(figurePath);
 
-saveFigures(figurePath,true,0);
+% saveFigures(figurePath,true,0);

@@ -2,7 +2,7 @@ clear; close all; clc; %(*@\draftcomment{the prefix for every sub-heading in thi
 
 updateSim = true; % will not recompute abaqus simulation, useful for testing fig generation
 overwrite = false; % overwrite already simulated files (forces script completion)
-coarseMesh = true; % coarse mesh for testing (quick sim)
+coarseMesh = false; % coarse mesh for testing (quick sim)
 figureTitles = true;
 loadSimDataFromMat = false; % load data from mat and not dat file if sim exists (much faster)
 doSaveFigures = true; % skip figure saving and just close them
@@ -817,16 +817,15 @@ resultStruct.poisson_xz_median = poisson_xz_median;
 resultStruct.poisson_xy_mean = poisson_xy_mean;
 resultStruct.poisson_xy_median = poisson_xy_median;
 
-appliedForce = zeros(numSteps, 1);
 stress = zeros(numSteps, 1);
 encastreTotalArea = zeros(numSteps, 1);
 
-for i = 1:numSteps
-    stress(i) = mean(E_effectiveStress(bcEncastreList,i));
+for j = 1:numSteps
+    stress(j) = mean(E_effectiveStress(bcEncastreList,j));
 
     encastreFaces = F(bcEncastreList, :);
     encastreFaceAreas = patchArea(encastreFaces, V);
-    encastreTotalArea(i) = sum(encastreFaceAreas);
+    encastreTotalArea(j) = sum(encastreFaceAreas);
 
 end
 
@@ -862,24 +861,25 @@ ylabel("Stress (MPa)", "FontName", "Helvetica", "FontAngle", "normal", "FontWeig
 youngsModulus = zeros(1,4);
 R_squared = zeros(1,4);
 
-for i = 1:4
+for j = 1:4
 
-    if i == 1
-        x = abs(strain_z_mean);
-    elseif i == 2
-        x = abs(strain_z_median);
-    elseif i == 3
-        x = abs(strain_y_mean);
-    elseif i == 4
-        x = abs(strain_y_median);
+    switch j
+        case 1
+        x = abs(strain_z_mean)*2;
+        case 2
+        x = abs(strain_z_median)*2;
+        case 3
+        x = abs(strain_y_mean)*2;
+        case 4
+        x = abs(strain_y_median)*2;
     end
 
     y = stress;
 
     [coefficients, stats] = polyfit(x,y, 1);
-    R_squared(i) = stats.rsquared;
+    R_squared(j) = stats.rsquared;
 
-    youngsModulus(i) = coefficients(1);
+    youngsModulus(j) = coefficients(1);
 end
 
 resultStruct.youngs_modulus.youngs_modulus_xz_mean = youngsModulus(1);

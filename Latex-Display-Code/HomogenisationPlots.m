@@ -19,24 +19,22 @@ end
 sortedFilenames = fileNames(sortedIndices);
 
 % data from CSV files in sorted order
-tables = cell(length(sortedFilenames), 1);
+dataTables = cell(length(sortedFilenames), 1);
 for i = 1:length(sortedFilenames)
     filePath = fullfile(folderPath, sortedFilenames{i});
-    tables{i} = readtable(filePath);
-    tables{i,2} = numericValues(sortedIndices(i)) * 100; % convert to percentage
+    dataTables{i} = readtable(filePath);
+    dataTables{i,2} = numericValues(sortedIndices(i)) * 100; % convert to percentage
 end
-
-densities = vertcat(tables{:,2});
 
 %(*@\codesubsection{Extract Infill Densities}{homogenisation-extract-infill-densities}@*)
 % Extract infill densities and stiffness matrices
-numFiles = length(tables);
-densities = zeros(numFiles, 1);
+numFiles = length(dataTables);
+infillPercentage = zeros(numFiles, 1);
 stiffnessData = zeros(numFiles, 6, 6); % 3D array: [density, row, col]
 
 for i = 1:numFiles
-    densities(i) = tables{i,2};        % Get density from second column
-    currentTable = tables{i,1};       % Get 6x6 table from first column
+    infillPercentage(i) = dataTables{i,2};        % Get density from second column
+    currentTable = dataTables{i,1};       % Get 6x6 table from first column
     stiffnessData(i, :, :) = currentTable{:,:}; % Convert table to numeric array
 end
 
@@ -47,6 +45,7 @@ selected_indices = round(linspace(1, numFiles, min(numFiles,numSteps)));
 
 nCols = ceil(sqrt(numSteps));
 nRows = ceil(numSteps / nCols);
+
 cFigure;
 for j = 1:length(selected_indices)
     idx = selected_indices(j);
@@ -57,7 +56,7 @@ for j = 1:length(selected_indices)
     axis square;
     xlabel('Column Index');
     ylabel('Row Index');
-    title(sprintf('%.1f%% Density', densities(idx)));
+    title(sprintf('%.1f%% Density', infillPercentage(idx)));
     set(gca, 'XTick', 1:6, 'YTick', 1:6);
 end
 sgtitle('Stiffness Matrices (C)');
@@ -70,7 +69,7 @@ hold on;
 fitResults = cell(6,1); % stores (a, b, R^2)
 
 for diagIdx = 1:6
-    x = densities(:);
+    x = infillPercentage(:);
     y = squeeze(stiffnessData(:, diagIdx, diagIdx));
     y = y(:);
 
@@ -120,26 +119,68 @@ title('Diagonal Stiffness Components against Infill Density');
 legend('Location', 'best');
 grid on;
 
-% compile results into table
-componentNames = cell(6,1); aValues = zeros(6,1);
-bValues = zeros(6,1); r2Values = zeros(6,1);
+%(*@\codesubsection{Matlab and nTopology result comparison}{homogenisation-matlab-and-ntopology-result-comparison}@*)
+numFiles = length(stiffnessData);
+results = zeros(numFiles, 9);
 
-for diagIdx = 1:6
-    componentNames{diagIdx} = sprintf('C_{%d%d}', diagIdx, diagIdx);
-    if isstruct(fitResults{diagIdx})
-        res = fitResults{diagIdx};
-        aValues(diagIdx) = res.a;
-        bValues(diagIdx) = res.b;
-        r2Values(diagIdx) = res.Rsquare;
-    else
-        aValues(diagIdx) = NaN;
-        bValues(diagIdx) = NaN;
-        r2Values(diagIdx) = NaN;
-    end
+for i = 1:numFiles
+    C = squeeze(stiffnessData(i,:,:)); % Extract 6x6 from 1x6x6
+    S = inv(C); 
+
+    % Extract engineering constants
+    E1 = 1 / S(1,1);
+    E2 = 1 / S(2,2);
+    E3 = 1 / S(3,3);
+    
+    nu12 = -S(2,1) / S(1,1);
+    nu13 = -S(3,1) / S(1,1);
+    nu23 = -S(3,2) / S(2,2);
+    
+    G12 = 1 / S(4,4);
+    G23 = 1 / S(5,5);
+    G31 = 1 / S(6,6);
+
+    % Store results
+    results(i, :) = [E1, E2, E3, nu12, nu13, nu23, G12, G23, G31];
 end
 
-resultsTable = table(componentNames, aValues, bValues, r2Values, 'VariableNames', {'Component', 'a', 'b', 'R2'});
-disp(resultsTable);
+% Convert to table and display
+propertyNames = {'E_x', 'E_y', 'E_z', 'v_{xy}', 'v_{xz}', 'v_{yz}', 'G_{xy}', 'G_{yz}', 'G_{xz}'};
+resultsTable = array2table(results, 'VariableNames', propertyNames);
+
+[numFiles, numProperties] = size(resultsTable);
+
+% convert table to array for plotting
+data = table2array(resultsTable);
+propertyNames = resultsTable.Properties.VariableNames;
+
+% subplots
+figure;
+hold on;
+for i = 1:numProperties
+    subplot(3,3,i); % Arrange in a 3x3 grid
+    hold on;
+    plot(infillPercentage, data(:,i), '-', 'LineWidth', 1.5, 'MarkerSize', 8);
+    switch i
+        case 1
+            plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xy_mean).*1e6,'Color',cyan, 'LineWidth', 1.5)
+        case 2
+            plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_mean).*1e6,'Color',cyan, 'LineWidth', 1.5)
+        case 3
+            plot(vertcat(summaryStruct.infill_percentage), vertcat(youngs_modulus.youngs_modulus_xz_mean).*1e6,'Color',cyan, 'LineWidth', 1.5)
+        case 4
+            plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean),'Color',cyan, 'LineWidth', 1.5)
+        case 5
+            plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xz_mean),'Color',cyan, 'LineWidth', 1.5)
+        case 6
+            plot(vertcat(summaryStruct.infill_percentage), vertcat(summaryStruct.poisson_xy_mean),'Color',cyan, 'LineWidth', 1.5)
+    end
+    title(propertyNames{i}, 'FontSize', 9);
+    xlabel('Infill Percentage (%)');
+    ylabel(propertyNames{i});
+    grid on;
+end
+sgtitle('Orthotropic Properties from 6x6 Stiffness Matrix, nTop and Matlab Method Comparison');
 
 %(*@\codesubsection{Save Figures}{homogenisation-save-figures}@*)
 saveFigures(folderPath,true,0);
